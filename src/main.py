@@ -6,12 +6,20 @@ from tkinter import messagebox, simpledialog
 from gameboard import *
 
 import random as rd
+import os
+
+
 
 row_count = 10
 col_count = row_count
 
 root = tk.Tk()
 root.title("snakes and ladders")
+
+icon_path = "assets/werm.ico"
+if os.path.exists(icon_path):
+    root.iconbitmap(default=icon_path)
+
 root.geometry("700x500")
 root.minsize(525, 375)
 root.grid_rowconfigure(0, weight=1, uniform="row_group")
