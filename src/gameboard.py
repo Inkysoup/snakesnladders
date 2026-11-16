@@ -225,11 +225,11 @@ class Gameboard:
         self.__player_path_positions.append(position)
 
         self.__players[self.__current_player].position = position
+        self.__current_player = (self.__current_player+1)%len(self.__players)
         self._draw_players()
         if position == 99:
             messagebox.showinfo("Game Over", f"Player {self.__current_player + 1} has finished!")
             self.__players[self.__current_player].is_finished = True
-        self.__current_player = (self.__current_player+1)%len(self.__players)
 
     def _draw_players(self) -> None:
         for item in self.__player_canvas_items:
@@ -252,7 +252,7 @@ class Gameboard:
             canvas_item: int = draw_player(
                 self.get_tile_position(self.__player_path_positions[0]),
                 "#B0B0B0",
-                self.__players[(self.__current_player)%len(self.__players)].radius
+                self.__players[(self.__current_player-1)%len(self.__players)].radius
             )
             self.__player_canvas_items.append(canvas_item)
 
