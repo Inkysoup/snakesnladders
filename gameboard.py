@@ -126,7 +126,7 @@ class Gameboard:
 
 
     def regen_portals(self, ladder_mean: int, snake_mean: int, ladder_uncertainty: int = 0, snake_uncertainty: int = 0) -> None:
-        def calc_portals(portal_mean:int, portal_uncertainty: int, isLadder: bool) -> list[Gameboard.Portal]:
+        def calc_portals(portal_mean:int, portal_uncertainty: int, is_ladder: bool, banned_entry_list: list[int] = []) -> list[Gameboard.Portal]:
             portal_count = portal_mean
             while True and portal_uncertainty:
                 portal_count = round(rd.normalvariate(mu=portal_mean, sigma=portal_uncertainty))
@@ -134,21 +134,26 @@ class Gameboard:
                     break
             portal_count = int(portal_count * 2)
             assert(portal_count < len(self.__tile_positions))
-            portal_entryexit_indexes = rd.sample(range(1, len(self.__tile_positions)-1), portal_count)
+
+            allowed_indexes = [i for i in range(1, len(self.__tile_positions)-1) if i not in banned_entry_list]
+
+            portal_entryexit_indexes = rd.sample(allowed_indexes, portal_count)
             portal_positions = []
             for i in range(0, len(portal_entryexit_indexes), 2):
                 entry: int = portal_entryexit_indexes[i]
                 exit: int = portal_entryexit_indexes[i+1]
-                if((entry > exit and isLadder) or (entry < exit and not isLadder)):
+                if((entry > exit and is_ladder) or (entry < exit and not is_ladder)):
                     entry = portal_entryexit_indexes[i+1]
                     exit = portal_entryexit_indexes[i]
                 portal_positions.append(self.Portal(entry, exit))
             return portal_positions
         
         self.__ladders.clear()
-        self.__ladders = calc_portals(ladder_mean, ladder_uncertainty, isLadder=True)
+        self.__ladders = calc_portals(ladder_mean, ladder_uncertainty, is_ladder=True)
+        
+        ladder_entry_list: list[int] = [i.entry for i in self.__ladders]
         self.__snakes.clear()
-        self.__snakes = calc_portals(snake_mean, snake_uncertainty, isLadder=False)
+        self.__snakes = calc_portals(snake_mean, snake_uncertainty, is_ladder=False, banned_entry_list=ladder_entry_list)
 
     def _draw_portals(self) -> None:
         radius: int = int(min(self.__board_canvas.winfo_width(), self.__board_canvas.winfo_height())/100)
