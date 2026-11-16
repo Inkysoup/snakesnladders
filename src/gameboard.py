@@ -228,8 +228,8 @@ class Gameboard:
         self.__current_player = (self.__current_player+1)%len(self.__players)
         self._draw_players()
         if position == 99:
-            messagebox.showinfo("Game Over", f"Player {self.__current_player + 1} has finished!")
-            self.__players[self.__current_player].is_finished = True
+            messagebox.showinfo("Game Over", f"Player {self.__current_player-1 + 1} has finished!")
+            self.__players[self.__current_player-1].is_finished = True
 
     def _draw_players(self) -> None:
         for item in self.__player_canvas_items:
